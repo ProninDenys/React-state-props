@@ -1,57 +1,52 @@
 import React, { useState, useEffect } from 'react';
+import { BrowserRouter as Router, Route, Routes, Link } from 'react-router-dom';
 import Header from './components/Header';
 import Banner from './components/Banner';
 import Blog from './components/Blog';
 import News from './components/News';
+import Contact from './components/Contact';
+import SinglePost from './components/SinglePost'; 
+import './App.css';
 
 function App() {
-  // Хук для состояния темы (темная или светлая)
   const [darkMode, setDarkMode] = useState(false);
 
-  // Хук для переключения темы на основе пользовательских предпочтений
   useEffect(() => {
     const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
     setDarkMode(prefersDark);
   }, []);
 
-  // Функция для переключения темы вручную
   const toggleTheme = () => {
     setDarkMode(!darkMode);
   };
 
   return (
-    <div style={{ ...styles.container, backgroundColor: darkMode ? '#282c34' : '#fff', color: darkMode ? '#fff' : '#333' }}>
-      <Header />
-      <Banner />
-      <button onClick={toggleTheme} style={styles.button}>
-        {darkMode ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
-      </button>
-      <div style={styles.content}>
-        <Blog />
-        <News />
+    <Router>
+      <div className={`app-container ${darkMode ? 'dark-mode' : 'light-mode'}`}>
+        <nav>
+          <Link to="/">Home</Link>
+          <Link to="/news">News</Link>
+          <Link to="/contact">Contact</Link>
+        </nav>
+        <Header />
+        <Banner />
+        <button className="toggle-button" onClick={toggleTheme}>
+          {darkMode ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
+        </button>
+        <Routes>
+          <Route path="/" element={
+            <div className="main-content">
+              <Blog />
+              <News />
+            </div>
+          } />
+          <Route path="/news" element={<News />} />
+          <Route path="/contact" element={<Contact />} />
+          <Route path="/blog/:postId" element={<SinglePost />} /> 
+        </Routes>
       </div>
-    </div>
+    </Router>
   );
 }
-
-const styles = {
-  container: {
-    fontFamily: 'Arial, sans-serif',
-    maxWidth: '1200px',
-    margin: '0 auto',
-    padding: '20px',
-    transition: 'background-color 0.3s ease', 
-  },
-  content: {
-    display: 'flex',
-    justifyContent: 'space-between',
-  },
-  button: {
-    padding: '10px 20px',
-    margin: '20px',
-    fontSize: '16px',
-    cursor: 'pointer',
-  },
-};
 
 export default App;
